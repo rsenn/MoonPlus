@@ -23,6 +23,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #include <list>
 #include <memory>
 
+#include "ast.hpp"
+
 namespace MoonP {
 
 const char* moonScriptVersion();
@@ -42,6 +44,7 @@ struct GlobalVar {
 
 using GlobalVars = std::unique_ptr<std::list<GlobalVar>>;
 
+class MoonParser;
 class MoonCompilerImpl;
 
 class MoonCompiler {
@@ -50,6 +53,14 @@ public:
   virtual ~MoonCompiler();
   std::tuple<std::string, std::string, GlobalVars> compile(std::string_view codes,
                                                            const MoonConfig& config = {});
+
+
+
+  MoonParser& getParser();
+  MoonParser const& getParser() const;
+
+  parserlib::ast_ptr<false, parserlib::ast_node> & getTree();
+  parserlib::ast_ptr<false, parserlib::ast_node>const & getTree() const;
 
 private:
   std::unique_ptr<MoonCompilerImpl> _compiler;

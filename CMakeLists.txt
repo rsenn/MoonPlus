@@ -67,15 +67,15 @@ endforeach()
 
 GET_FILENAME_COMPONENT(LUA_EXEC_NAME "${LUA}" NAME_WE)
 IF(LUA_EXEC_NAME STREQUAL "luajit")
-	FIND_LIBRARY(LUA_LIBRARIES
-		NAMES luajit libluajit
-		PATHS ${LUA_INCDIR}/../../lib
-		NO_DEFAULT_PATH)
+    FIND_LIBRARY(LUA_LIBRARIES
+        NAMES luajit libluajit
+        PATHS ${LUA_INCDIR}/../../lib
+        NO_DEFAULT_PATH)
 ELSEIF(LUA_EXEC_NAME MATCHES "lua.*")
-	FIND_LIBRARY(LUA_LIBRARIES
-		NAMES lua lua53 lua52 lua51 liblua liblua53 liblua52 liblua51
-		PATHS ${LUA_INCDIR}/../../lib
-		NO_DEFAULT_PATH)
+    FIND_LIBRARY(LUA_LIBRARIES
+        NAMES lua lua53 lua52 lua51 liblua liblua53 liblua52 liblua51
+        PATHS ${LUA_INCDIR}/../../lib
+        NO_DEFAULT_PATH)
 ENDIF()
 MESSAGE(STATUS "Lua library: ${LUA_LIBRARIES}")
 
@@ -89,10 +89,23 @@ include_directories( src ${LUA_INCLUDE_DIR} )
 set(DO_MODULE OFF)
 
 
-if(DO_MODULE) 
+if(DO_MODULE)
 add_definitions( -DLIBMOONP )
 
-  add_library( moonp  MODULE src/MoonP/ast.cpp src/MoonP/parser.cpp src/MoonP/moon_parser.cpp src/MoonP/moon_compiler.cpp  src/moonp.cpp)
+  add_library( moonp  MODULE
+    src/MoonP/ast.cpp
+    src/MoonP/ast.hpp
+    src/MoonP/moon_ast.h
+    src/MoonP/moon_compiler.cpp
+    src/MoonP/moon_compiler.h
+    src/MoonP/moon_parser.cpp
+    src/MoonP/moon_parser.h
+    src/MoonP/parser.cpp
+    src/MoonP/parser.hpp
+    src/Moonscript.h
+    src/StackTracePlus.h
+
+    src/moonp.cpp)
 
   set_target_properties( moonp PROPERTIES PREFIX "")
   target_link_libraries( moonp ${LUA_LIBRARIES} )
@@ -100,7 +113,19 @@ add_definitions( -DLIBMOONP )
 
 else()
 
-  add_library( libmoonp src/MoonP/ast.cpp src/MoonP/parser.cpp src/MoonP/moon_parser.cpp src/MoonP/moon_compiler.cpp)
+  add_library( libmoonp
+    src/MoonP/ast.cpp
+    src/MoonP/ast.hpp
+    src/MoonP/moon_ast.h
+    src/MoonP/moon_compiler.cpp
+    src/MoonP/moon_compiler.h
+    src/MoonP/moon_parser.cpp
+    src/MoonP/moon_parser.h
+    src/MoonP/parser.cpp
+    src/MoonP/parser.hpp
+    src/Moonscript.h
+    src/StackTracePlus.h
+    )
 
   set_target_properties( libmoonp PROPERTIES PREFIX "" SONAME moonp)
   target_link_libraries( libmoonp ${LUA_LIBRARIES} ${PTHREAD_LIBRARY})
@@ -113,7 +138,7 @@ else()
 endif()
 
 
-INSTALL(TARGETS ${TARGETS} 
+INSTALL(TARGETS ${TARGETS}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
 )

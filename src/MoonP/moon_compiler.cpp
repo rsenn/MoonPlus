@@ -28,7 +28,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*/
 
 namespace MoonP {
 
-const std::string MoonConfig::indent = "\t";
+const std::string MoonConfig::indent = "  ";
 
 using namespace std::string_view_literals;
 using namespace parserlib;
@@ -54,12 +54,16 @@ moonScriptVersion() {
   return "0.5.0-r0.2.0";
 }
 
+class MoonParser;
+
 class MoonCompilerImpl {
 public:
   std::tuple<std::string, std::string, GlobalVars>
   compile(std::string_view codes, const MoonConfig& config) {
     _config = config;
     _info = _parser.parse<File_t>(codes);
+
+   // std::string str = _parser.toString();
     GlobalVars globals;
     if(_info.node) {
       try {
@@ -107,6 +111,12 @@ public:
     _joinBuf.clear();
     _globals.clear();
   }
+
+  const MoonParser& parser() const { return _parser; }
+  MoonParser& parser() { return _parser; }
+
+  const ast_ptr<false, ast_node>& tree() const { return _info.node; }
+  ast_ptr<false, ast_node>& tree() { return _info.node; }
 
 private:
   MoonConfig _config;
@@ -4696,5 +4706,24 @@ std::tuple<std::string, std::string, GlobalVars>
 MoonCompiler::compile(std::string_view codes, const MoonConfig& config) {
   return _compiler->compile(codes, config);
 }
+
+
+MoonParser& MoonCompiler::getParser() {
+  return _compiler->parser();
+}
+
+MoonParser const& MoonCompiler::getParser() const {
+  return _compiler->parser();
+}
+
+
+
+parserlib::ast_ptr<false, parserlib::ast_node> & MoonCompiler::getTree() {
+  return _compiler->tree();
+}
+parserlib::ast_ptr<false, parserlib::ast_node>const & MoonCompiler::getTree() const {
+  return  _compiler->tree();
+}
+
 
 } // namespace MoonP
